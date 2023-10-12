@@ -373,6 +373,7 @@ student_performance_dataset <-
 
 View(student_performance_dataset)
 
+
 ## Create a filtered subset of the data ----
 
 # Function to expand contractions
@@ -403,7 +404,7 @@ evaluation_likes_and_wishes <- student_performance_dataset %>%
   mutate(`Student's Gender` =
            ifelse(gender == 1, "Male", "Female")) %>%
   rename(`Class Group` = class_group) %>%
-  rename(Likes = `D - 1. \nWrite two things you like about the teaching and learning in this unit so far.`) %>% # nolint
+  rename(Likes = `D - 1. Write two things you like about the teaching and learning in this unit so far.`) %>% # nolint
   rename(Wishes = `D - 2. Write at least one recommendation to improve the teaching and learning in this unit (for the remaining weeks in the semester)`) %>% # nolint
   select(`Class Group`,
          `Student's Gender`, `Average Course Evaluation Rating`,
@@ -417,6 +418,7 @@ evaluation_likes_and_wishes$Likes <- sapply(
 evaluation_likes_and_wishes$Wishes <- sapply(
                                              evaluation_likes_and_wishes$Wishes,
                                              expand_contractions)
+
 
 head(evaluation_likes_and_wishes, 10)
 
@@ -513,44 +515,67 @@ write.csv(evaluation_wishes_filtered,
 # Assigns words into one or more of the following ten categories:
 # positive, negative, anger, anticipation, disgust, fear, joy, sadness,
 # surprise, and trust.
-nrc <- get_sentiments("nrc")
+
+# #################### ----
+## lexicon - An alternative to load the NRC lexicon ----
+if (!is.element("lexicon", installed.packages()[, 1])) {
+  install.packages("lexicon", dependencies = TRUE,
+                   repos = "https://cloud.r-project.org")
+}
+require("lexicon")
+
+### NRC ----
+# Instead of:
+# nrc <- get_sentiments("nrc")
+# View(nrc)
+
+# Try this:
+data(hash_nrc_emotions)
+nrc <- hash_nrc_emotions
+nrc <- nrc %>%
+  mutate(word = token, sentiment = emotion) %>%
+  select(word, sentiment)
 View(nrc)
+# ################### ----
+
+
 
 ### AFINN ----
 # Assigns words with a score that runs between -5 and 5. Negative scores
 # indicate negative sentiments and positive scores indicate positive sentiments
-afinn <- get_sentiments(lexicon = "afinn")
+
+tidytext::get_sentiments(lexicon = "afinn")
 View(afinn)
 
 ### Bing ----
 # Assigns words into positive and negative categories only
-bing <- get_sentiments("bing")
+tidytext::get_sentiments(lexicon = "bing")
 View(bing)
 
 ### Loughran ----
 # By Loughran & McDonald, (2010)
 # The Loughran lexicon is specifically designed for financial text analysis and
 # categorizes words into different financial sentiment categories.
-loughran <- get_sentiments("loughran")
+tidytext::get_sentiments(lexicon = "loughran")
 View(loughran)
 
 # If you get an error locating the Loughran lexicon using the code above,
 # then you can download it manually from the University of Notre Dame here:
 # URL: https://sraf.nd.edu/loughranmcdonald-master-dictionary/
-loughran <- read_csv("data/LoughranMcDonald_MasterDictionary_2018.csv")
+readr::read_csv("data/LoughranMcDonald_MasterDictionary_2018.csv")
 View(loughran)
 
 # STEP 5. Inner Join the Likes/Wishes with the Corresponding Sentiment(s) ----
+# STEP 5. Inner Join the Likes/Wishes with the Corresponding Sentiment(s) ----
 evaluation_likes_filtered_nrc <- evaluation_likes_filtered %>%
-  inner_join(get_sentiments("nrc"),
-             by = join_by(`Likes (tokenized)` == word),
-             relationship = "many-to-many")
+  full_join(nrc, by = c("Likes (tokenized)" = "word"), suffix = c("", ".nrc"))
+
+
 
 evaluation_wishes_filtered_nrc <- evaluation_wishes_filtered %>%
-  inner_join(get_sentiments("nrc"),
+  dplyr::inner_join(nrc,
              by = join_by(`Wishes (tokenized)` == word),
              relationship = "many-to-many")
-
 # STEP 6. Overall Sentiment ----
 ## Evaluation Likes ----
 nrc_likes_plot <- evaluation_likes_filtered_nrc %>%

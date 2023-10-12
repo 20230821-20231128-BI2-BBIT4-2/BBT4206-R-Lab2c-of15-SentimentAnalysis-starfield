@@ -16,15 +16,15 @@ editor_options:
 # Student Details
 
 +---------------------------------------------------+------------------------------------------------------------------------------------------------------+
-| **Student ID Numbers and Names of Group Members** | *\<list one student name, group, and ID per line; you should be between 2 and 5 members per group\>* |
+| **Student ID Numbers and Names of Group Members** |  |
 |                                                   |                                                                                                      |
-|                                                   | 1.  ID - Group - Name                                                                                |
+|                                 | 1.135232- Starfield - Sadiki Hamisi                                                                                |
 |                                                   |                                                                                                      |
-|                                                   | 2.  ID - Group - Name                                                                                |
+|                               | 2.134782 - Starfield -    Yasmin Choma                                                                                |
 |                                                   |                                                                                                      |
-|                                                   | 3.  ID - Group - Name                                                                                |
+|                                | 3.134783- Starfield - Moses Mbugua                                                                                |
 |                                                   |                                                                                                      |
-|                                                   | 4.  ID - Group - Name                                                                                |
+|                                 | 4.  ID -Starfield- Glenn Oloo                                                                                |
 |                                                   |                                                                                                      |
 |                                                   | 5.  ID - Group - Name                                                                                |
 +---------------------------------------------------+------------------------------------------------------------------------------------------------------+
@@ -68,38 +68,238 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, eval = TRUE,
 
 # \<Provide an Appropriate Title Here\>
 
-Describe the code chunk here:
+      LOAD STUDENT DATASET
 
-```{r Your Second Code Chunk}
-# Fill this with R related code that will be executed when the R markdown file
-# is rendered using knitR
+```{This code is used to load Students Dataset}
+
 library(readr)
+student_performance_dataset <-
+  read_csv("data/20230412-20230719-BI1-BBIT4-1-StudentPerformanceDataset.CSV",
+           col_types =
+           cols(
+                class_group = col_factor(levels = c("A", "B", "C")),
+                gender = col_factor(levels = c("1", "0")),
+                YOB = col_date(format = "%Y"),
+                regret_choosing_bi = col_factor(levels = c("1", "0")),
+                drop_bi_now = col_factor(levels = c("1", "0")),
+                motivator = col_factor(levels = c("1", "0")),
+                read_content_before_lecture =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                anticipate_test_questions =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                answer_rhetorical_questions =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                find_terms_I_do_not_know =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                copy_new_terms_in_reading_notebook =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                take_quizzes_and_use_results =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                reorganise_course_outline =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                write_down_important_points =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                space_out_revision =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                studying_in_study_group =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                schedule_appointments =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                goal_oriented = col_factor(levels = c("1", "0")),
+                spaced_repetition =
+                col_factor(levels = c("1", "2", "3", "4")),
+                testing_and_active_recall =
+                col_factor(levels = c("1", "2", "3", "4")),
+                interleaving = col_factor(levels = c("1", "2", "3", "4")),
+                categorizing = col_factor(levels = c("1", "2", "3", "4")),
+                retrospective_timetable =
+                col_factor(levels = c("1", "2", "3", "4")),
+                cornell_notes = col_factor(levels = c("1", "2", "3", "4")),
+                sq3r = col_factor(levels = c("1", "2", "3", "4")),
+                commute = col_factor(levels = c("1", "2", "3", "4")),
+                study_time = col_factor(levels = c("1", "2", "3", "4")),
+                repeats_since_Y1 = col_integer(),
+                paid_tuition = col_factor(levels = c("0", "1")),
+                free_tuition = col_factor(levels = c("0", "1")),
+                extra_curricular = col_factor(levels = c("0", "1")),
+                sports_extra_curricular = col_factor(levels = c("0", "1")),
+                exercise_per_week = col_factor(levels = c("0", "1", "2", "3")),
+                meditate = col_factor(levels = c("0", "1", "2", "3")),
+                pray = col_factor(levels = c("0", "1", "2", "3")),
+                internet = col_factor(levels = c("0", "1")),
+                laptop = col_factor(levels = c("0", "1")),
+                family_relationships =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                friendships = col_factor(levels = c("1", "2", "3", "4", "5")),
+                romantic_relationships =
+                col_factor(levels = c("0", "1", "2", "3", "4")),
+                spiritual_wellnes =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                financial_wellness =
+                col_factor(levels = c("1", "2", "3", "4", "5")),
+                health = col_factor(levels = c("1", "2", "3", "4", "5")),
+                day_out = col_factor(levels = c("0", "1", "2", "3")),
+                night_out = col_factor(levels = c("0", "1", "2", "3")),
+                alcohol_or_narcotics =
+                col_factor(levels = c("0", "1", "2", "3")),
+                mentor = col_factor(levels = c("0", "1")),
+                mentor_meetings = col_factor(levels = c("0", "1", "2", "3")),
+                `Attendance Waiver Granted: 1 = Yes, 0 = No` =
+                col_factor(levels = c("0", "1")),
+                GRADE = col_factor(levels = c("A", "B", "C", "D", "E"))),
+           locale = locale())
+
+View(student_performance_dataset)
 ```
 
-Describe the next code chunk here:
+Contractions of Words From the Student Perfomance Dataset
 
 ```{r Your Third Code Chunk}
-# Fill this with other R related code that will be executed when the R markdown
-# file is rendered using knitR
+
 library(readr)
+expand_contractions <- function(doc) {
+  doc <- gsub("I'm", "I am", doc, ignore.case = TRUE)
+  doc <- gsub("you're", "you are", doc, ignore.case = TRUE)
+  doc <- gsub("he's", "he is", doc, ignore.case = TRUE)
+  doc <- gsub("she's", "she is", doc, ignore.case = TRUE)
+  doc <- gsub("it's", "it is", doc, ignore.case = TRUE)
+  doc <- gsub("we're", "we are", doc, ignore.case = TRUE)
+  doc <- gsub("they're", "they are", doc, ignore.case = TRUE)
+  doc <- gsub("I'll", "I will", doc, ignore.case = TRUE)
+  doc <- gsub("you'll", "you will", doc, ignore.case = TRUE)
+  doc <- gsub("he'll", "he will", doc, ignore.case = TRUE)
+  doc <- gsub("she'll", "she will", doc, ignore.case = TRUE)
+  doc <- gsub("it'll", "it will", doc, ignore.case = TRUE)
+  doc <- gsub("we'll", "we will", doc, ignore.case = TRUE)
+  doc <- gsub("they'll", "they will", doc, ignore.case = TRUE)
+  doc <- gsub("won't", "will not", doc, ignore.case = TRUE)
+  doc <- gsub("can't", "cannot", doc, ignore.case = TRUE)
+  doc <- gsub("n't", " not", doc, ignore.case = TRUE)
+  return(doc)
+}
 ```
 
-## \<You Can Have a Sub-Title Here\>
+Loading the required lexicons
 
 ```{r Your Fourth Code Chunk}
-# Fill this with other R related code that will be executed when the R markdown
 # file is rendered using knitR
-library(readr)
+library(tm)
+data(hash_nrc_emotions)
+nrc <- hash_nrc_emotions
+nrc <- nrc %>%
+ mutate(word = token, sentiment = emotion) %>%
+ select(word, sentiment)
+View(nrc)
+
+tidytext::get_sentiments(lexicon = "afinn")
+View(afinn)
+
+tidytext::get_sentiments(lexicon = "bing")
+View(bing)
+
+tidytext::get_sentiments(lexicon = "loughran")
+View(loughran)
 ```
 
-# \<You can Provide Another Appropriate Title Here\>
+ Combining Likes Data with NRC Emotion Lexicon
 
-Describe the code chunk here:
+```{r}
+evaluation_likes_filtered_nrc <- evaluation_likes_filtered %>%
+  full_join(nrc, by = c("Likes (tokenized)" = "word"), suffix = c("", ".nrc"))
 
-```{r Your Fifth Code Chunk}
-# Fill this with R related code that will be executed when the R markdown file
-# is rendered using knitR
-library(readr)
+
+
+evaluation_wishes_filtered_nrc <- evaluation_wishes_filtered %>%
+  dplyr::inner_join(nrc,
+             by = join_by(`Wishes (tokenized)` == word),
+             relationship = "many-to-many")
 ```
+
+Visualizing Lexicon-Based Sentiment Analysis of Course Evaluation Likes
+```{r}
+#}
+nrc_likes_plot <- evaluation_likes_filtered_nrc %>%
+  group_by(sentiment) %>%
+  # You can filter by the class group if you wish
+  # filter(`Class Group` == "A") %>%
+  summarise(word_count = n()) %>%
+  ungroup() %>%
+  mutate(sentiment = reorder(sentiment, word_count)) %>%
+  # `fill = -word_count` is used to make the larger bars darker
+  ggplot(aes(sentiment, word_count, fill = -word_count)) +
+  geom_col() +
+  guides(fill = FALSE) + # Turn off the legend
+  blue_grey_theme() +
+  labs(x = "Sentiment", y = "Word Count") +
+  # scale_y_continuous(limits = c(0, 15000)) + #Hard code the axis limit
+  ggtitle("Lexicon-Based Sentiment Analysis of Course Evaluation Likes") +
+  coord_flip()
+plot(nrc_likes_plot)
+```
+
+Creating a Meme with Course Information and Sentiment Analysis Plot
+```{r}
+img <- "images/SCES-logo-01-blue-grey-bg-with-meme-space.jpg"
+# The meme's label can be specified here:
+lab <- "The BBT4106: Business Intelligence I course
+        taught from 12th April 2023 to 19th July 2023
+        by Dr Allan Omondi"
+# Overlay the plot on the image and create the meme file
+meme(img, lab, "memes/nrc_wishes_plot.jpg", inset = nrc_wishes_plot)
+#Read the file back in and display it!
+nrc_meme <- image_read("memes/nrc_wishes_plot.jpg")
+plot(nrc_meme)
+```
+
+Creating Chord Diagram for Sentiment Analysis of Course Evaluation Likes by Group
+```{r}
+jpeg(filename = "visualizations/nrc_likes_chord.jpeg",
+     width = 1920, height = 1080, units = "px", pointsize = 12,
+     bg = "transparent", res = 150)
+
+# svg(filename = "visualizations/nrc_likes_chord.svg",
+#     width = 8.5, height = 8.5, pointsize = 12,
+#     bg = "transparent")
+
+# pdf("visualizations/nrc_likes_chord.pdf",
+#     width = 8.5, height = 8.5,
+#     bg = "transparent", pagecentre = TRUE, paper = "A4")
+
+grid_col <- c("A" = blue_grey_colours_11[1],
+              "B" = "#f3c487",
+              "C" = blue_grey_colours_11[5])
+
+nrc_likes_chord <-  evaluation_likes_filtered_nrc %>%
+  # filter(decade != "NA" & !sentiment %in% c("positive", "negative")) %>%
+  count(sentiment, `Class Group`) %>%
+  group_by(`Class Group`, sentiment) %>%
+  summarise(sentiment_sum = sum(n)) %>%
+  filter(sentiment_sum > 10) %>%
+  mutate(sentiment = reorder(sentiment, sentiment_sum)) %>%
+  ungroup()
+
+circos.clear()
+# Set the gap size
+circos.par(gap.after = c(rep(5, length(unique(nrc_likes_chord[[1]])) - 1), 15,
+                         rep(5, length(unique(nrc_likes_chord[[2]])) - 1), 15))
+
+chordDiagram(nrc_likes_chord, grid.col = grid_col, transparency = .2)
+title("Lexicon-Based Sentiment Analysis of Course Evaluation Likes per Group")
+
+# To close the device used to create either the PNG, JPEG, SVG, or PDF.
+dev.off()
+```
+
+Creating a Radar Chart of Sentiment Counts per Group
+```{r}
+nrc_likes_per_sentiment_per_group_radar <- # nolint
+  evaluation_likes_filtered_nrc %>%
+  group_by(`Class Group`, sentiment) %>%
+  count(`Class Group`, sentiment) %>%
+  select(`Class Group`, sentiment, sentiment_count = n)
+
+View(nrc_likes_per_sentiment_per_group_radar)
+```
+
 
 **etc.** as per the lab submission requirements.
