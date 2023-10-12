@@ -301,5 +301,252 @@ nrc_likes_per_sentiment_per_group_radar <- # nolint
 View(nrc_likes_per_sentiment_per_group_radar)
 ```
 
+step 9 -  Classification of Words per Sentiment
+```{r}
+library(tidytext)
+evaluation_likes_filtered_nrc %>%
+  
+  distinct(`Likes (tokenized)`) %>%
+  inner_join(get_sentiments("nrc"),
+             by = join_by(`Likes (tokenized)` == word),
+             relationship = "many-to-many") %>%
+  ggplot(aes(x = `Likes (tokenized)`, fill = sentiment)) +
+  facet_grid(~sentiment) +
+  geom_bar() +
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x = element_blank()) +
+  xlab(NULL) + ylab(NULL) +
+  ggtitle(paste("Classification of Words in Course Evaluation Likes ",
+                "based on the NRC Lexicon")) +
+  coord_flip()
 
-**etc.** as per the lab submission requirements.
+## Evaluation Wishes ----
+evaluation_wishes_filtered_nrc %>%
+  
+  distinct(`Wishes (tokenized)`) %>%
+  inner_join(get_sentiments("nrc"),
+             by = join_by(`Wishes (tokenized)` == word),
+             relationship = "many-to-many") %>%
+  ggplot(aes(x = `Wishes (tokenized)`, fill = sentiment)) +
+  facet_grid(~sentiment) +
+  geom_bar() + 
+  theme(panel.grid.major.x = element_blank(),
+        axis.text.x = element_blank()) + 
+  xlab(NULL) + ylab(NULL) +
+  ggtitle(paste("Classification of Words in Course Evaluation Wishes ",
+                "based on the NRC Lexicon")) +
+  coord_flip()
+```
+
+step 10 - 
+
+```{r}
+evaluation_rating_per_question_per_group <- student_performance_dataset %>% # nolint
+  rename(`Class Group` = class_group) %>%
+  filter(!is.na(`Average Course Evaluation Rating`)) %>%
+  group_by(`Class Group`) %>%
+  summarize(
+    `A. I am enjoying the subject` =
+      mean(`A - 1. I am enjoying the subject`),
+    `B. Classes start and end on time` =
+      mean(`A - 2. Classes start and end on time`),
+    `C. The learning environment is participative, involves learning by doing and is group-based` = # nolint
+      mean(`A - 3. The learning environment is participative, involves learning by doing and is group-based`), # nolint
+    `D. The subject content is delivered according to the course outline and meets my expectations` = # nolint
+      mean(`A - 4. The subject content is delivered according to the course outline and meets my expectations`), # nolint
+    `E. The topics are clear and logically developed` =
+      mean(`A - 5. The topics are clear and logically developed`),
+    `F. I am developing my oral and writing skills` =
+      mean(`A - 6. I am developing my oral and writing skills`),
+    `G. I am developing my reflective and critical reasoning skills` =
+      mean(`A - 7. I am developing my reflective and critical reasoning skills`), # nolint
+    `H. The assessment methods are assisting me to learn` =
+      mean(`A - 8. The assessment methods are assisting me to learn`),
+    `I. I receive relevant feedback` =
+      mean(`A - 9. I receive relevant feedback`),
+    `J. I read the recommended readings and notes` =
+      mean(`A - 10. I read the recommended readings and notes`),
+    `K. I use the eLearning material posted` =
+      mean(`A - 11. I use the eLearning material posted`),
+    `L. Mean Overall Course Evaluation Rating` =
+      mean(`Average Course Evaluation Rating`),
+  ) %>%
+  
+  select(
+    `Class Group`,
+    `A. I am enjoying the subject`,
+    `B. Classes start and end on time`,
+    `C. The learning environment is participative, involves learning by doing and is group-based`, # nolint
+    `D. The subject content is delivered according to the course outline and meets my expectations`, # nolint
+    `E. The topics are clear and logically developed`,
+    `F. I am developing my oral and writing skills`,
+    `G. I am developing my reflective and critical reasoning skills`, # nolint
+    `H. The assessment methods are assisting me to learn`,
+    `I. I receive relevant feedback`,
+    `J. I read the recommended readings and notes`,
+    `K. I use the eLearning material posted`,
+    `L. Mean Overall Course Evaluation Rating`
+  )
+
+View(evaluation_rating_per_question_per_group)
+
+evaluation_rating_per_question_per_group_long_data <- evaluation_rating_per_question_per_group %>% # nolint
+  pivot_longer(
+               cols = -`Class Group`,
+               names_to = "Evaluation Question",
+               values_to = "Mean Value")
+
+View(evaluation_rating_per_question_per_group_long_data)
+
+evaluation_rating_per_question_per_group_long_data <- # nolint
+  evaluation_rating_per_question_per_group_long_data %>%
+  mutate(`Evaluation Question` =
+         factor(`Evaluation Question`,
+           levels =
+           c("A. I am enjoying the subject",
+             "B. Classes start and end on time",
+             "C. The learning environment is participative, involves learning by doing and is group-based", # nolint
+             "D. The subject content is delivered according to the course outline and meets my expectations", # nolint
+             "E. The topics are clear and logically developed",
+             "F. I am developing my oral and writing skills",
+             "G. I am developing my reflective and critical reasoning skills", # nolint
+             "H. The assessment methods are assisting me to learn",
+             "I. I receive relevant feedback",
+             "J. I read the recommended readings and notes",
+             "K. I use the eLearning material posted",
+             "L. Mean Overall Course Evaluation Rating")
+         )) %>%
+  mutate(`Class Group` = factor(`Class Group`, levels = c("A", "B", "C")))
+
+View(evaluation_rating_per_question_per_group_long_data)
+
+
+library(stringr)
+
+evaluation_rating_per_question_per_group_long_data$`Evaluation Question` <- 
+  str_wrap(evaluation_rating_per_question_per_group_long_data$`Evaluation Question`,
+           width = 30)
+
+library(ggplot2)
+
+ggplot(evaluation_rating_per_question_per_group_long_data,
+       aes(fill = `Class Group`, y = `Mean Value`, x = `Evaluation Question`,
+           label = `Mean Value`)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  coord_flip() +  # Flip the coordinates to make it vertical
+  geom_text(position = position_dodge(width = 0.9),
+            hjust = 1, vjust = 0.5) +  # Add text labels
+  labs(title = "Standard Course Evaluation Score per Question per Group",
+       x = "Standard Course Evaluation Questions", y = "Mean Value") +
+  scale_fill_manual(values = blue_grey_colours_3) +
+  blue_grey_theme() +
+  geom_hline(yintercept = 4, color = "#b90c0c",
+             linetype = "dashed", size = 1)
+
+library(dplyr)
+
+evaluation_rating_per_question_per_gender <- student_performance_dataset %>% # nolint
+  mutate(`Student's Gender` =
+           ifelse(gender == 1, "Male", "Female")) %>%
+  filter(!is.na(`Average Course Evaluation Rating`)) %>%
+  group_by(`Student's Gender`) %>%
+  summarize(
+    `A. I am enjoying the subject` =
+      mean(`A - 1. I am enjoying the subject`),
+    `B. Classes start and end on time` =
+      mean(`A - 2. Classes start and end on time`),
+    `C. The learning environment is participative, involves learning by doing and is group-based` = # nolint
+      mean(`A - 3. The learning environment is participative, involves learning by doing and is group-based`), # nolint
+    `D. The subject content is delivered according to the course outline and meets my expectations` = # nolint
+      mean(`A - 4. The subject content is delivered according to the course outline and meets my expectations`), # nolint
+    `E. The topics are clear and logically developed` =
+      mean(`A - 5. The topics are clear and logically developed`),
+    `F. I am developing my oral and writing skills` =
+      mean(`A - 6. I am developing my oral and writing skills`),
+    `G. I am developing my reflective and critical reasoning skills` =
+      mean(`A - 7. I am developing my reflective and critical reasoning skills`), # nolint
+    `H. The assessment methods are assisting me to learn` =
+      mean(`A - 8. The assessment methods are assisting me to learn`),
+    `I. I receive relevant feedback` =
+      mean(`A - 9. I receive relevant feedback`),
+    `J. I read the recommended readings and notes` =
+      mean(`A - 10. I read the recommended readings and notes`),
+    `K. I use the eLearning material posted` =
+      mean(`A - 11. I use the eLearning material posted`),
+    `L. Mean Overall Course Evaluation Rating` =
+      mean(`Average Course Evaluation Rating`),
+  ) %>%
+  
+  select(
+    `Student's Gender`,
+    `A. I am enjoying the subject`,
+    `B. Classes start and end on time`,
+    `C. The learning environment is participative, involves learning by doing and is group-based`, # nolint
+    `D. The subject content is delivered according to the course outline and meets my expectations`, # nolint
+    `E. The topics are clear and logically developed`,
+    `F. I am developing my oral and writing skills`,
+    `G. I am developing my reflective and critical reasoning skills`, # nolint
+    `H. The assessment methods are assisting me to learn`,
+    `I. I receive relevant feedback`,
+    `J. I read the recommended readings and notes`,
+    `K. I use the eLearning material posted`,
+    `L. Mean Overall Course Evaluation Rating`
+  )
+
+View(evaluation_rating_per_question_per_gender)
+
+library(tidyr)
+
+evaluation_rating_per_question_per_gender_long_data <- evaluation_rating_per_question_per_gender %>% # nolint
+  pivot_longer(
+               cols = -`Student's Gender`,
+               names_to = "Evaluation Question",
+               values_to = "Mean Value")
+
+View(evaluation_rating_per_question_per_gender_long_data)
+
+evaluation_rating_per_question_per_gender_long_data <- # nolint
+  evaluation_rating_per_question_per_gender_long_data %>%
+  mutate(`Evaluation Question` =
+         factor(`Evaluation Question`,
+           levels =
+           c("A. I am enjoying the subject",
+             "B. Classes start and end on time",
+             "C. The learning environment is participative, involves learning by doing and is group-based", # nolint
+             "D. The subject content is delivered according to the course outline and meets my expectations", # nolint
+             "E. The topics are clear and logically developed",
+             "F. I am developing my oral and writing skills",
+             "G. I am developing my reflective and critical reasoning skills", # nolint
+             "H. The assessment methods are assisting me to learn",
+             "I. I receive relevant feedback",
+             "J. I read the recommended readings and notes",
+             "K. I use the eLearning material posted",
+             "L. Mean Overall Course Evaluation Rating")
+         )) %>%
+  mutate(`Student's Gender` =
+         factor(`Student's Gender`, levels = c("Male", "Female")))
+
+View(evaluation_rating_per_question_per_gender_long_data)
+
+# This is done to enable word wrapping when the plot is created
+library(stringr)
+evaluation_rating_per_question_per_gender_long_data$`Evaluation Question` <- # nolint
+str_wrap(evaluation_rating_per_question_per_gender_long_data$`Evaluation Question`, # nolint
+         width = 30)
+
+
+
+ggplot(evaluation_rating_per_question_per_gender_long_data,
+       aes(fill = `Student's Gender`, y = `Mean Value`,
+           x = `Evaluation Question`, label = `Mean Value`)) +
+  geom_bar(position = "dodge", stat = "identity") +
+  coord_flip() +  # Flip the coordinates to make it vertical
+  geom_text(position = position_dodge(width = 0.9),
+            hjust = 1, vjust = 0.5) +  # Add text labels
+  labs(title = "Standard Course Evaluation Score per Question per Gender",
+       x = "Standard Course Evaluation Questions", y = "Mean Value") +
+  scale_fill_manual(values = c("lightblue", "lightpink")) +
+  blue_grey_theme() +
+  geom_hline(yintercept = 4, color = "#b90c0c",
+             linetype = "dashed", size = 1)
+```
